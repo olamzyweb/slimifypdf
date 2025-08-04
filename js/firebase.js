@@ -1,12 +1,12 @@
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyBdxSKOyWuIHyPWnNO_Y2AoYbkw0TCToV4",
-    authDomain: "slimifypdf.firebaseapp.com",
-    projectId: "slimifypdf",
-    storageBucket: "slimifypdf.firebasestorage.app",
-    messagingSenderId: "962861037398",
-    appId: "1:962861037398:web:b30b703f53213011a008f7",
-    measurementId: "G-36P6QWRCZ0"
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: "",
+    measurementId: ""
 };
 
 // Initialize Firebase
