@@ -1,0 +1,27 @@
+{
+  "name": "slimifypdf",
+  "version": "1.0.0",
+  "description": "A simple, fast, and responsive web app for compressing PDF and other file formats",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "cloudinary": "^1.41.0"
+  },
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "keywords": [
+    "pdf",
+    "compression",
+    "file-compression",
+    "web-app",
+    "firebase",
+    "cloudinary"
+  ],
+  "author": "SlimifyPDF Team",
+  "license": "MIT"
+} 

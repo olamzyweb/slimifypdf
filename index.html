@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlimifyPDF - Fast & Free PDF Compression</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ef4444">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SlimifyPDF">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192x192/ef4444/ffffff?text=SP">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics-compat.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .hero-animation {
+            animation: fadeInUp 1s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <i class="fas fa-file-pdf text-3xl text-red-500 mr-3"></i>
+                    <span class="text-2xl font-bold text-gray-800">SlimifyPDF</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-gray-600 hover:text-red-500 transition-colors">Features</a>
+                    <a href="#how-it-works" class="text-gray-600 hover:text-red-500 transition-colors">How it Works</a>
+                    <a href="auth.html" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">Login</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-2 space-y-2">
+                <a href="#features" class="block py-2 text-gray-600 hover:text-red-500">Features</a>
+                <a href="#how-it-works" class="block py-2 text-gray-600 hover:text-red-500">How it Works</a>
+                <a href="auth.html" class="block py-2 text-red-500 font-semibold">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg min-h-screen flex items-center justify-center pt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="hero-animation">
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6">
+                    Compress PDFs
+                    <span class="block text-4xl md:text-5xl">in Seconds</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
+                    Fast, free, and secure PDF compression. Reduce file size by up to 90% while maintaining quality.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button onclick="window.location.href='compressor.html'" class="bg-white text-red-500 px-8 py-4 rounded-lg text-xl font-semibold hover:bg-gray-100 transition-colors shadow-lg">
+                        <i class="fas fa-upload mr-2"></i>
+                        Upload & Compress Now
+                    </button>
+                    <button onclick="window.location.href='auth.html'" class="border-2 border-white text-white px-8 py-4 rounded-lg text-xl font-semibold hover:bg-white hover:text-red-500 transition-colors">
+                        <i class="fas fa-user mr-2"></i>
+                        Create Account
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Floating Features -->
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="floating bg-white/10 backdrop-blur-sm rounded-lg p-6 text-white">
+                    <i class="fas fa-bolt text-4xl mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Lightning Fast</h3>
+                    <p class="text-white/80">Compress files in seconds with our optimized algorithms</p>
+                </div>
+                <div class="floating bg-white/10 backdrop-blur-sm rounded-lg p-6 text-white" style="animation-delay: 0.5s;">
+                    <i class="fas fa-shield-alt text-4xl mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">100% Secure</h3>
+                    <p class="text-white/80">Your files are processed locally and never stored on our servers</p>
+                </div>
+                <div class="floating bg-white/10 backdrop-blur-sm rounded-lg p-6 text-white" style="animation-delay: 1s;">
+                    <i class="fas fa-gift text-4xl mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Completely Free</h3>
+                    <p class="text-white/80">No hidden fees, no registration required for basic use</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Why Choose SlimifyPDF?</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Experience the most efficient PDF compression tool with advanced features designed for modern users.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-compress-arrows-alt text-2xl text-red-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Smart Compression</h3>
+                    <p class="text-gray-600">Advanced algorithms that maintain quality while reducing size</p>
+                </div>
+                
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-mobile-alt text-2xl text-blue-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Mobile Friendly</h3>
+                    <p class="text-gray-600">Works perfectly on all devices and screen sizes</p>
+                </div>
+                
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-cloud text-2xl text-green-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Cloud Storage</h3>
+                    <p class="text-gray-600">Save and access your compressed files from anywhere</p>
+                </div>
+                
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-share-alt text-2xl text-purple-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Easy Sharing</h3>
+                    <p class="text-gray-600">Share compressed files with friends and colleagues instantly</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">How It Works</h2>
+                <p class="text-xl text-gray-600">Three simple steps to compress your PDFs</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">1</div>
+                    <h3 class="text-xl font-semibold mb-2">Upload Your File</h3>
+                    <p class="text-gray-600">Drag and drop your PDF or click to browse. We support multiple formats.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">2</div>
+                    <h3 class="text-xl font-semibold mb-2">Choose Compression</h3>
+                    <p class="text-gray-600">Select your preferred compression level and quality settings.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">3</div>
+                    <h3 class="text-xl font-semibold mb-2">Download & Share</h3>
+                    <p class="text-gray-600">Get your compressed file instantly and share it with others.</p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button onclick="window.location.href='compressor.html'" class="bg-red-500 text-white px-8 py-4 rounded-lg text-xl font-semibold hover:bg-red-600 transition-colors">
+                    Start Compressing Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-file-pdf text-2xl text-red-500 mr-2"></i>
+                        <span class="text-xl font-bold">SlimifyPDF</span>
+                    </div>
+                    <p class="text-gray-400">Fast, secure, and free PDF compression for everyone.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Features</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">PDF Compression</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">File Sharing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Cloud Storage</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 SlimifyPDF. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html> 

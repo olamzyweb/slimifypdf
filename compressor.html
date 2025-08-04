@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compress Files - SlimifyPDF</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ef4444">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SlimifyPDF">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192x192/ef4444/ffffff?text=SP">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics-compat.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1"></script>
+    <style>
+        .drop-zone {
+            border: 2px dashed #d1d5db;
+            transition: all 0.3s ease;
+        }
+        .drop-zone.dragover {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .file-card {
+            animation: slideInUp 0.5s ease-out;
+        }
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <i class="fas fa-file-pdf text-3xl text-red-500 mr-3"></i>
+                        <span class="text-2xl font-bold text-gray-800">SlimifyPDF</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-red-500 transition-colors">Home</a>
+                    <a href="dashboard.html" id="dashboard-link" class="text-gray-600 hover:text-red-500 transition-colors hidden">Dashboard</a>
+                    <a href="auth.html" id="auth-link" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">Login</a>
+                    <button id="logout-btn" class="text-gray-600 hover:text-red-500 transition-colors hidden">Logout</button>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-2 space-y-2">
+                <a href="index.html" class="block py-2 text-gray-600 hover:text-red-500">Home</a>
+                <a href="dashboard.html" id="mobile-dashboard-link" class="block py-2 text-gray-600 hover:text-red-500 hidden">Dashboard</a>
+                <a href="auth.html" id="mobile-auth-link" class="block py-2 text-red-500 font-semibold">Login</a>
+                <button id="mobile-logout-btn" class="block py-2 text-gray-600 hover:text-red-500 w-full text-left hidden">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Compress Your Files</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Upload your PDF, DOC, or image files and compress them instantly. 
+                Save storage space while maintaining quality.
+            </p>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                <div class="text-center mb-6">
+                    <i class="fas fa-cloud-upload-alt text-5xl text-red-500 mb-4"></i>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-2">Upload Your Files</h2>
+                    <p class="text-gray-600">Drag and drop files here or click to browse</p>
+                </div>
+
+                <!-- Drop Zone -->
+                <div id="drop-zone" class="drop-zone rounded-lg p-8 text-center cursor-pointer">
+                    <div class="space-y-4">
+                        <i class="fas fa-file-upload text-4xl text-gray-400"></i>
+                        <div>
+                            <p class="text-lg font-medium text-gray-700">Drop files here</p>
+                            <p class="text-sm text-gray-500">or</p>
+                            <button type="button" onclick="document.getElementById('file-input').click()" 
+                                class="mt-2 bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                                Browse Files
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-400">
+                            Supported formats: PDF, DOC, DOCX, PNG, JPG, JPEG (Max 50MB)
+                        </p>
+                    </div>
+                </div>
+
+                <input type="file" id="file-input" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" class="hidden">
+
+                <!-- Compression Options -->
+                <div id="compression-options" class="mt-8 hidden">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Compression Settings</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Quality Level</label>
+                            <select id="quality-level" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                <option value="high">High Quality (Smaller reduction)</option>
+                                <option value="medium" selected>Medium Quality (Balanced)</option>
+                                <option value="low">Low Quality (Maximum compression)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Output Format</label>
+                            <select id="output-format" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                <option value="pdf">PDF</option>
+                                <option value="zip">ZIP Archive</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">File Name</label>
+                            <input type="text" id="output-filename" placeholder="compressed-file" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button id="compress-btn" class="w-full bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors font-semibold">
+                            <i class="fas fa-compress-arrows-alt mr-2"></i>
+                            Compress Files
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="progress-section" class="bg-white rounded-lg shadow-lg p-8 mb-8 hidden">
+                <div class="text-center mb-6">
+                    <i class="fas fa-cog fa-spin text-3xl text-red-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Compressing Files...</h3>
+                    <p class="text-gray-600">Please wait while we process your files</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div id="progress-container">
+                        <!-- Progress bars will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-section" class="bg-white rounded-lg shadow-lg p-8 hidden">
+                <div class="text-center mb-6">
+                    <i class="fas fa-check-circle text-4xl text-green-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Compression Complete!</h3>
+                    <p class="text-gray-600">Your files have been successfully compressed</p>
+                </div>
+                
+                <div id="results-container" class="space-y-4">
+                    <!-- Results will be added here dynamically -->
+                </div>
+
+                <!-- Share Section -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Share This App</h4>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="shareApp('whatsapp')" class="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                            <i class="fab fa-whatsapp mr-2"></i>
+                            WhatsApp
+                        </button>
+                        <button onclick="shareApp('twitter')" class="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            <i class="fab fa-twitter mr-2"></i>
+                            Twitter
+                        </button>
+                        <button onclick="shareApp('email')" class="flex items-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                            <i class="fas fa-envelope mr-2"></i>
+                            Email
+                        </button>
+                        <button onclick="copyLink()" class="flex items-center px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+                            <i class="fas fa-link mr-2"></i>
+                            Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Files (for logged-in users) -->
+            <div id="recent-files" class="bg-white rounded-lg shadow-lg p-8 hidden">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Recent Compressions</h3>
+                <div id="recent-files-container" class="space-y-3">
+                    <!-- Recent files will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script src="js/firebase.js"></script>
+    <script src="js/cloudinary.js"></script>
+    <script src="js/compressor.js"></script>
+    <script src="js/share.js"></script>
+</body>
+</html> 

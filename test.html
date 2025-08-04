@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - SlimifyPDF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">SlimifyPDF Test Page</h1>
+            <p class="text-xl text-gray-600">Testing basic functionality</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Test Toast Notifications -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Toast Notifications</h2>
+                <div class="space-y-2">
+                    <button onclick="showToast('Success message!', 'success')" 
+                        class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600">
+                        Success Toast
+                    </button>
+                    <button onclick="showToast('Error message!', 'error')" 
+                        class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600">
+                        Error Toast
+                    </button>
+                    <button onclick="showToast('Info message!', 'info')" 
+                        class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+                        Info Toast
+                    </button>
+                </div>
+            </div>
+
+            <!-- Test File Size Formatting -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">File Size Formatting</h2>
+                <div class="space-y-2">
+                    <p>1024 bytes = <span id="size1"></span></p>
+                    <p>1048576 bytes = <span id="size2"></span></p>
+                    <p>1073741824 bytes = <span id="size3"></span></p>
+                </div>
+            </div>
+
+            <!-- Test Responsive Detection -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Device Detection</h2>
+                <div class="space-y-2">
+                    <p>Is Mobile: <span id="mobile"></span></p>
+                    <p>Is Tablet: <span id="tablet"></span></p>
+                    <p>Is Desktop: <span id="desktop"></span></p>
+                </div>
+            </div>
+
+            <!-- Test Loading States -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Loading States</h2>
+                <div class="space-y-2">
+                    <button onclick="showLoading('Processing...')" 
+                        class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600">
+                        Show Loading
+                    </button>
+                    <button onclick="hideLoading()" 
+                        class="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600">
+                        Hide Loading
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 text-center">
+            <a href="index.html" class="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors">
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Test file size formatting
+        document.getElementById('size1').textContent = formatFileSize(1024);
+        document.getElementById('size2').textContent = formatFileSize(1048576);
+        document.getElementById('size3').textContent = formatFileSize(1073741824);
+
+        // Test device detection
+        document.getElementById('mobile').textContent = isMobile();
+        document.getElementById('tablet').textContent = isTablet();
+        document.getElementById('desktop').textContent = isDesktop();
+    </script>
+</body>
+</html> 

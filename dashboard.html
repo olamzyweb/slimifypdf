@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SlimifyPDF</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ef4444">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SlimifyPDF">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192x192/ef4444/ffffff?text=SP">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics-compat.js"></script>
+    <style>
+        .stats-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .file-card {
+            transition: all 0.3s ease;
+        }
+        .file-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <i class="fas fa-file-pdf text-3xl text-red-500 mr-3"></i>
+                        <span class="text-2xl font-bold text-gray-800">SlimifyPDF</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-red-500 transition-colors">Home</a>
+                    <a href="compressor.html" class="text-gray-600 hover:text-red-500 transition-colors">Compress</a>
+                    <div class="relative" id="user-menu-container">
+                        <button id="user-menu-btn" class="flex items-center text-gray-700 hover:text-red-500 transition-colors">
+                            <img id="user-avatar" src="https://via.placeholder.com/32x32" alt="User" class="w-8 h-8 rounded-full mr-2">
+                            <span id="user-name">User</span>
+                            <i class="fas fa-chevron-down ml-1"></i>
+                        </button>
+                        <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden">
+                            <a href="#profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="#settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                            <hr class="my-1">
+                            <button id="logout-btn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-2 space-y-2">
+                <a href="index.html" class="block py-2 text-gray-600 hover:text-red-500">Home</a>
+                <a href="compressor.html" class="block py-2 text-gray-600 hover:text-red-500">Compress</a>
+                <hr class="my-1">
+                <div class="flex items-center py-2">
+                    <img id="mobile-user-avatar" src="https://via.placeholder.com/32x32" alt="User" class="w-8 h-8 rounded-full mr-2">
+                    <span id="mobile-user-name" class="text-gray-700">User</span>
+                </div>
+                <a href="#profile" class="block py-2 text-gray-600 hover:text-red-500">Profile</a>
+                <a href="#settings" class="block py-2 text-gray-600 hover:text-red-500">Settings</a>
+                <button id="mobile-logout-btn" class="block py-2 text-gray-600 hover:text-red-500 w-full text-left">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-8 text-white mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Welcome back, <span id="welcome-name">User</span>!</h1>
+                    <p class="text-red-100">Here's your compression activity and saved files.</p>
+                </div>
+                <div class="hidden md:block">
+                    <button onclick="window.location.href='compressor.html'" 
+                        class="bg-white text-red-500 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        New Compression
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="stats-card bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-file-pdf text-2xl text-blue-500"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Files</p>
+                        <p class="text-2xl font-bold text-gray-900" id="total-files">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-compress-arrows-alt text-2xl text-green-500"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Space Saved</p>
+                        <p class="text-2xl font-bold text-gray-900" id="space-saved">0 MB</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="bg-purple-100 p-3 rounded-full">
+                        <i class="fas fa-chart-line text-2xl text-purple-500"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Avg. Reduction</p>
+                        <p class="text-2xl font-bold text-gray-900" id="avg-reduction">0%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="bg-orange-100 p-3 rounded-full">
+                        <i class="fas fa-calendar-alt text-2xl text-orange-500"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">This Month</p>
+                        <p class="text-2xl font-bold text-gray-900" id="monthly-files">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Recent Files -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">Recent Compressions</h2>
+                        <button onclick="loadAllFiles()" class="text-red-500 hover:text-red-600 text-sm font-medium">
+                            View All
+                        </button>
+                    </div>
+                    
+                    <div id="recent-files-container" class="space-y-4">
+                        <!-- Files will be loaded here -->
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-file-pdf text-4xl mb-4"></i>
+                            <p>No files compressed yet</p>
+                            <button onclick="window.location.href='compressor.html'" 
+                                class="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                                Start Compressing
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <button onclick="window.location.href='compressor.html'" 
+                            class="w-full flex items-center justify-between p-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors">
+                            <span class="flex items-center">
+                                <i class="fas fa-compress-arrows-alt mr-3"></i>
+                                Compress New File
+                            </span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button onclick="exportHistory()" 
+                            class="w-full flex items-center justify-between p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
+                            <span class="flex items-center">
+                                <i class="fas fa-download mr-3"></i>
+                                Export History
+                            </span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button onclick="shareApp('general')" 
+                            class="w-full flex items-center justify-between p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
+                            <span class="flex items-center">
+                                <i class="fas fa-share-alt mr-3"></i>
+                                Share App
+                            </span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Account Info -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Account Info</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Plan:</span>
+                            <span class="text-green-600 font-medium">Free</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Storage Used:</span>
+                            <span class="text-gray-900" id="storage-used">0 MB</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Files This Month:</span>
+                            <span class="text-gray-900" id="files-this-month">0</span>
+                        </div>
+                    </div>
+                    <button onclick="upgradePlan()" class="w-full mt-4 bg-gradient-to-r from-red-500 to-red-600 text-white py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-colors">
+                        Upgrade Plan
+                    </button>
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+                    <h3 class="text-lg font-semibold mb-3">💡 Pro Tip</h3>
+                    <p class="text-blue-100 text-sm">
+                        Use "Medium Quality" compression for the best balance between file size and quality. 
+                        You can save up to 70% of storage space!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script src="js/firebase.js"></script>
+    <script src="js/cloudinary.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/share.js"></script>
+</body>
+</html> 
